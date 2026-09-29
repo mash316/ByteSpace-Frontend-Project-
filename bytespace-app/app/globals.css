@@ -1,0 +1,94 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+:root {
+  --background: #fafafa;
+  --foreground: #242528;
+  --primary-blue: #003be2;
+  --lime-400: #d4fb20;
+  --lime-500: #cbfc01;
+  --shuttle-50: #f5f5f6;
+  --shuttle-100: #e5e6e8;
+  --shuttle-200: #ced0d3;
+  --shuttle-400: #82868e;
+  --shuttle-500: #4b4c53;
+  --black: #000000;
+  --text-soft: #4f4f4f;
+  --light-gray: #d1d1d1;
+  --vulcan: #040819;
+  --vulcan-soft: #f1f4fe;
+  --page-bg: #fafafa;
+  --play-icon: #f5f2ff;
+  --brand-font: "Poppins", "Segoe UI", sans-serif;
+  --body-font: "Satoshi", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--foreground);
+  font-family: var(--body-font);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.font-display {
+  font-family: var(--brand-font);
+}
+
+.font-body {
+  font-family: var(--body-font);
+}
+
+.blue-grid-shell {
+  position: relative;
+  overflow: hidden;
+  background: var(--primary-blue);
+}
+
+.blue-grid-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.12) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12) 2px, transparent 2px);
+  background-size: 120px 120px;
+  pointer-events: none;
+}
+
+.card-radius {
+  border-radius: 24px;
+}
+
+.input-shell {
+  border-radius: 12px;
+  border: 1px solid #e5e6e8;
+  background: white;
+}
+
+.text-shadow-soft {
+  text-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
