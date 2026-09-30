@@ -5,8 +5,15 @@ import { BlueGridBackground } from "@/components/common/BlueGridBackground";
 import { CourseCard } from "@/components/common/CourseCard";
 import { PrimaryButton } from "@/components/common/PrimaryButton";
 import { courses } from "@/data/courses";
+import { Building2, Camera, Code2, DraftingCompass, Laptop, Megaphone } from "lucide-react";
 
-const logos = ["Logoipsum", "Logoipsum", "Logoipsum", "Logoipsum", "Logoipsum"];
+const logos = [
+  { kind: "wave", label: "Logoipsum" },
+  { kind: "sun", label: "Logoipsum" },
+  { kind: "slash", label: "Logoipsum" },
+  { kind: "clover", label: "Logoipsum" },
+  { kind: "coil", label: "Logoipsum" },
+];
 const categoryRows = [
   ["Featured", "Music", "Drawing & Painting", "Marketing", "Animation", "Social Media", "UI/UX Design", "Creative Marketing"],
   ["Digital Illustration", "Film & Video", "Crafts", "Freelance & Entrepreneurship", "Graphic Design", "Photography"],
@@ -14,13 +21,49 @@ const categoryRows = [
 ];
 
 const learningCategories = [
-  { label: "Design", icon: "✏️" },
-  { label: "Development", icon: "💻" },
-  { label: "IT & Software", icon: "🖥️" },
-  { label: "Business", icon: "🏢" },
-  { label: "Marketing", icon: "📣" },
-  { label: "Photography", icon: "📷" },
+  { label: "Design", Icon: DraftingCompass },
+  { label: "Development", Icon: Code2 },
+  { label: "IT & Software", Icon: Laptop },
+  { label: "Business", Icon: Building2 },
+  { label: "Marketing", Icon: Megaphone },
+  { label: "Photography", Icon: Camera },
 ];
+
+function BrandLogoMark({ kind }: { kind: string }) {
+  return (
+    <svg viewBox="0 0 32 32" className="h-[32px] w-[32px] shrink-0 text-[#82868E]" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {kind === "wave" && (
+        <>
+          <circle cx="16" cy="16" r="12" />
+          <path d="M7 17c2.4-5 5-5 7.4 0s5 5 8.6 0M10 11c1.7-2.8 3.5-2.8 5.2 0s3.5 2.8 5.2 0" />
+        </>
+      )}
+      {kind === "sun" && (
+        <>
+          <circle cx="16" cy="16" r="5" />
+          <path d="M16 2.5v4M16 25.5v4M2.5 16h4M25.5 16h4M6.45 6.45l2.83 2.83m13.44 13.44 2.83 2.83m0-19.1-2.83 2.83M9.28 22.72l-2.83 2.83" />
+        </>
+      )}
+      {kind === "slash" && (
+        <>
+          <circle cx="16" cy="16" r="12" />
+          <path d="M10 22V10l12 12V10" />
+        </>
+      )}
+      {kind === "clover" && (
+        <>
+          <circle cx="16" cy="8" r="5" />
+          <circle cx="24" cy="16" r="5" />
+          <circle cx="16" cy="24" r="5" />
+          <circle cx="8" cy="16" r="5" />
+        </>
+      )}
+      {kind === "coil" && (
+        <path d="M16 16c0-2.2 3.5-2.2 3.5 0s-7 2.2-7-1.2 10.5-3.4 10.5 1.2-3.5 5.5-7 5.5-7-2.1-7-6.2 3.5-7.5 8-7.5 9 3.3 9 8.5" />
+      )}
+    </svg>
+  );
+}
 
 function SearchIcon() {
   return (
@@ -28,63 +71,6 @@ function SearchIcon() {
       <circle cx="11" cy="11" r="6" />
       <path d="m16 16 5 5" />
     </svg>
-  );
-}
-
-function StarIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-[18px] w-[18px] text-[#D4FB20]" fill="currentColor">
-      <path d="m12 2.75 2.77 5.61 6.18.9-4.47 4.35 1.06 6.15L12 2.75 6.46 19.76l1.06-6.15-4.47-4.35 6.18-.9L12 2.75Z" />
-    </svg>
-  );
-}
-
-function FloatingLearningProgress() {
-  return (
-    <div className="absolute left-[842px] top-[651px] h-[131px] w-[232px] rounded-[16px] bg-white p-[16px] shadow-lg">
-      <div className="mb-[8px] text-[14px] font-medium text-[#4B4C53]">Learning Progress</div>
-      <div className="mb-[12px] text-[48px] font-semibold leading-none tracking-[-0.02em] text-[#242528]">55%</div>
-      <div className="h-[8px] w-[200px] overflow-hidden rounded-full bg-[#F6F6F6]">
-        <div className="h-full w-[112px] rounded-full bg-[#D4FB20]" />
-      </div>
-    </div>
-  );
-}
-
-function FloatingUIUX() {
-  return (
-    <div className="absolute left-[404px] top-[639px] h-[70px] w-[208px] rounded-[16px] bg-white p-[12px] shadow-lg">
-      <div className="text-[16px] font-medium text-[#242528]">UI/UX Design</div>
-      <div className="mt-[4px] flex items-center gap-[8px] text-[12px] text-[#82868E]">
-        <span className="inline-block h-[10px] w-[10px] rounded-full bg-[#D4FB20]" />
-        <span>200 Courses • 1000+ Students</span>
-      </div>
-    </div>
-  );
-}
-
-function FloatingHappyStudents() {
-  return (
-    <div className="absolute left-[328px] top-[837px] h-[121px] w-[258px] rounded-[16px] bg-[#D4FB20] p-[16px] shadow-lg">
-      <div className="mb-[8px] text-[14px] font-medium text-[#242528]">Happy Students</div>
-      <div className="mb-[12px] flex items-center gap-[10px]">
-        <div className="flex items-center gap-[4px] text-[18px] font-medium text-[#242528]">4.5</div>
-        <div className="flex gap-[4px] text-[#242528]">{Array.from({ length: 5 }).map((_, idx) => <StarIcon key={idx} />)}</div>
-        <div className="text-[12px] font-bold text-[#242528]">(240)</div>
-      </div>
-      <div className="flex items-center">
-        {Array.from({ length: 7 }).map((_, idx) => (
-          <div
-            key={idx}
-            className={['h-[43px] w-[43px] rounded-full border-2 border-[#D4FB20]', idx > 0 ? '-ml-[16px]' : ''].join(' ')}
-            style={{
-              background: idx === 6 ? '#242528' : "url(https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80) center / cover no-repeat",
-            }}
-          />
-        ))}
-        <div className="ml-[-16px] flex h-[43px] w-[43px] items-center justify-center rounded-full bg-[#242528] text-[12px] font-bold text-white">2K+</div>
-      </div>
-    </div>
   );
 }
 
@@ -100,55 +86,55 @@ function LearnPathStat({ number, label }: { number: string; label: string }) {
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-[#FAFAFA] text-[#242528]">
-      <BlueGridBackground className="relative h-[1024px]">
+      <BlueGridBackground
+        className="relative min-h-[760px] bg-top bg-no-repeat pb-[clamp(64px,8vw,120px)]"
+        style={{
+          backgroundImage: "url('/home-hero.jpeg')",
+          backgroundPosition: "top center",
+          backgroundSize: "100% auto",
+          minHeight: "max(760px, 64.7vw)",
+        }}
+        showGrid={false}
+        overflowVisible
+      >
         <Header />
 
-        <div className="absolute left-1/2 top-[582px] h-[1149px] w-[1149px] -translate-x-1/2 rounded-full border-[320px] border-[#CBFC01] opacity-95" />
-
-        <div className="relative z-10 mx-auto w-[1200px] pt-[169px]">
-          <div className="mx-auto max-w-[935px] text-center">
-            <h1 className="font-[Poppins,ui-sans-serif,system-ui,sans-serif] text-[72px] font-semibold leading-[120%] tracking-[-0.01em] text-[#F5F5F6]">
-              Get Access to Hundreds Courses Available
+        <div className="relative z-10 mx-auto w-full max-w-[1200px] px-4 pt-[112px] sm:px-6">
+          <div className="mx-auto max-w-[780px] text-center">
+            <h1 className="font-[Poppins,ui-sans-serif,system-ui,sans-serif] text-[clamp(32px,4vw,56px)] font-semibold leading-[1.12] text-[#F5F5F6]">
+              Get Access to Hundreds<br />Courses Available
             </h1>
-            <p className="mx-auto mt-[20px] max-w-[845px] text-[18px] font-normal leading-[160%] text-[#E5E6E8]">
+            <p className="mx-auto mt-[24px] max-w-[845px] text-[16px] font-normal leading-[160%] text-[#E5E6E8]">
               Unlock your creativity, gain valuable knowledge, and grow your business with our wide range of courses.
             </p>
           </div>
 
           <div className="mt-[32px] flex justify-center">
-            <div className="flex w-[581px] items-center gap-[16px] rounded-[24px] bg-white p-[8px] shadow-md">
+            <form action="/courses" method="get" className="flex w-full max-w-[480px] items-center gap-[12px] rounded-[24px] bg-white p-[6px] shadow-md">
               <div className="flex flex-1 items-center gap-[12px] rounded-[24px] bg-white px-[20px] py-[14px]">
                 <SearchIcon />
                 <input
+                  name="q"
                   className="w-full border-0 bg-transparent text-[18px] text-[#82868E] outline-none placeholder:text-[#82868E]"
                   placeholder="Course, topic, creator"
+                  aria-label="Search courses, topics, or creators"
                 />
               </div>
-              <button className="h-[46px] w-[104px] rounded-[24px] bg-[#D4FB20] text-[16px] font-medium text-[#242528]">
+              <button type="submit" className="h-[44px] w-[92px] shrink-0 rounded-[24px] bg-[#D4FB20] text-[16px] font-medium text-[#242528]">
                 Search
               </button>
-            </div>
+            </form>
           </div>
 
-          <div className="relative mt-[40px] flex justify-center">
-            <img
-              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80"
-              alt="Student with laptop"
-              className="h-[541px] w-[578px] rounded-[30px] object-cover shadow-[0_30px_60px_rgba(0,0,0,0.3)]"
-            />
-          </div>
-
-          <FloatingUIUX />
-          <FloatingLearningProgress />
-          <FloatingHappyStudents />
         </div>
       </BlueGridBackground>
 
       <section className="bg-[#F5F5F6] py-[80px]">
-        <div className="mx-auto flex w-[1132px] justify-between gap-[72px]">
+        <div className="mx-auto grid w-[1132px] grid-cols-2 items-center gap-x-8 gap-y-6 sm:grid-cols-3 lg:grid-cols-5">
           {logos.map((logo, index) => (
-            <div key={index} className="text-[26px] font-semibold text-[#82868E] opacity-90">
-              {logo}
+            <div key={`${logo.kind}-${index}`} className="flex items-center justify-center gap-[10px] text-[#82868E]">
+              <BrandLogoMark kind={logo.kind} />
+              <span className="font-[Poppins,ui-sans-serif,system-ui,sans-serif] text-[21px] font-semibold">{logo.label}</span>
             </div>
           ))}
         </div>
@@ -191,13 +177,13 @@ export default function HomePage() {
           At Bytespace, we believe in empowering individuals through knowledge. Our diverse range of courses spans various fields, ensuring there&apos;s something for everyone. Unleash your potential and explore our carefully curated categories.
         </p>
 
-        <div className="mt-[48px] grid grid-cols-3 gap-[40px]">
-          {learningCategories.map(({ label, icon }) => (
-            <div key={label} className="flex h-[167px] w-[167px] flex-col items-center justify-center rounded-[24px] border border-[#CED0D3] bg-white p-[20px] text-center">
-              <div className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#D4FB20] text-[28px] text-[#242528]">
-                {icon}
+        <div className="mt-[48px] grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          {learningCategories.map(({ label, Icon }) => (
+            <div key={label} className="flex min-w-0 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white px-4 py-6 text-center">
+              <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#c6f600] text-[#242528]">
+                <Icon className="h-6 w-6 stroke-[1.8]" aria-hidden="true" />
               </div>
-              <div className="mt-[12px] text-[20px] font-medium leading-[120%] text-[#242528]">{label}</div>
+              <div className="mt-[12px] text-[16px] font-medium leading-[120%] text-[#242528]">{label}</div>
             </div>
           ))}
         </div>
@@ -227,7 +213,7 @@ export default function HomePage() {
 
             <div className="relative h-[552px] w-[621px]">
               <div className="absolute left-[0px] top-[60px] h-[440px] w-[360px] rounded-[24px] bg-white p-[12px] shadow-2xl">
-                <img className="h-full w-full rounded-[18px] object-cover" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80" alt="Course preview" />
+                <img className="h-full w-full rounded-[18px] object-contain" src="/home-down1.png" alt="Students and learning progress" />
               </div>
               <div className="absolute left-[345px] top-[213px] flex h-[138px] w-[232px] items-center rounded-[16px] bg-white p-[16px] shadow-xl">
                 <div className="w-full">
@@ -243,41 +229,7 @@ export default function HomePage() {
 
           <div className="flex items-center justify-between gap-[79px]">
             <div className="relative h-[596px] w-[541px]">
-              <img className="absolute left-[0px] top-[0px] h-[596px] w-[435px] rounded-[24px] object-cover shadow-2xl" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=900&q=80" alt="Woman using tablet" />
-              <div className="absolute left-[0px] top-[44px] h-[119px] w-[232px] rounded-[16px] bg-[#003BE2] p-[16px] text-white shadow-xl">
-                <div className="text-[16px] font-medium text-[#F5F5F6]">Total Revenue</div>
-                <div className="mt-[4px] text-[10px] text-[#F5F5F6]">July 1-28</div>
-                <div className="mt-[8px] font-[Poppins,ui-sans-serif,system-ui,sans-serif] text-[24px] font-semibold leading-[32px] text-[#F5F5F6]">$120.29</div>
-                <div className="mt-[8px] inline-flex rounded-full bg-[#CBFC01] px-[10px] py-[4px] text-[10px] font-medium text-[#242528]">+12$</div>
-              </div>
-              <div className="absolute left-[0px] top-[194px] h-[135px] w-[134px] rounded-[16px] bg-[#003BE2] p-[16px] text-white shadow-xl">
-                <div className="text-[16px] text-[#F5F5F6]">Year to Date</div>
-                <div className="mt-[6px] text-[12px] text-[#F5F5F6]">2023</div>
-                <div className="mt-[10px] font-[Poppins,ui-sans-serif,system-ui,sans-serif] text-[24px] font-semibold">$1,200.38</div>
-                <div className="mt-[8px] inline-flex rounded-full bg-[#CBFC01] px-[10px] py-[4px] text-[10px] font-medium text-[#242528]">+12$</div>
-              </div>
-              <div className="absolute left-[283px] top-[413px] flex h-[123px] w-[258px] items-center rounded-[16px] bg-[#D4FB20] p-[16px] shadow-xl">
-                <div className="w-full">
-                  <div className="mb-[6px] text-[14px] font-medium text-[#242528]">Happy Students</div>
-                  <div className="mb-[8px] flex items-center gap-[8px]">
-                    <span className="text-[18px] font-medium text-[#242528]">4.5</span>
-                    <StarIcon />
-                    <span className="text-[12px] font-bold text-[#242528]">(240)</span>
-                  </div>
-                  <div className="flex items-center">
-                    {Array.from({ length: 7 }).map((_, idx) => (
-                      <div
-                        key={idx}
-                        className={['h-[43px] w-[43px] rounded-full border-2 border-[#D4FB20]', idx > 0 ? '-ml-[16px]' : ''].join(' ')}
-                        style={{
-                          background: "url(https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80) center / cover no-repeat",
-                        }}
-                      />
-                    ))}
-                    <div className="ml-[-16px] flex h-[43px] w-[43px] items-center justify-center rounded-full bg-[#242528] text-[12px] font-bold text-white">2K+</div>
-                  </div>
-                </div>
-              </div>
+              <img className="h-full w-full object-contain" src="/girl.png" alt="Creator working with a tablet" />
             </div>
 
             <div className="w-[580px]">
@@ -329,13 +281,13 @@ export default function HomePage() {
 
         <div className="mx-auto mt-[72px] flex w-[1204px] gap-[41px]">
           {[
-            { name: 'Sarah M.', role: 'Enthusiastic Learner', quote: 'ByteSpace has transformed my approach to learning. The diverse range of courses and the quality of content provided by creators have exceeded my expectations. The platform truly fosters a sense of community and lifelong learning.' },
-            { name: 'James L.', role: 'Lifelong Learner', quote: 'I\'ve tried several online learning platforms, and ByteSpace stands out for its vibrant community and the variety of courses available. The easy navigation and engaging content make it a go-to platform for continuous skill development.' },
-            { name: 'Alex B.', role: 'Inspired Creator', quote: 'As a creator, ByteSpace has been a game-changer for me. The Course Editor is user-friendly, and the support from the community is incredible. It\'s fulfilling to see my courses making a positive impact on learners globally.' },
+            { name: 'Sarah M.', role: 'Enthusiastic Learner', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80', quote: 'ByteSpace has transformed my approach to learning. The diverse range of courses and the quality of content provided by creators have exceeded my expectations. The platform truly fosters a sense of community and lifelong learning.' },
+            { name: 'James L.', role: 'Lifelong Learner', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80', quote: 'I\'ve tried several online learning platforms, and ByteSpace stands out for its vibrant community and the variety of courses available. The easy navigation and engaging content make it a go-to platform for continuous skill development.' },
+            { name: 'Alex B.', role: 'Inspired Creator', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80', quote: 'As a creator, ByteSpace has been a game-changer for me. The Course Editor is user-friendly, and the support from the community is incredible. It\'s fulfilling to see my courses making a positive impact on learners globally.' },
           ].map((person) => (
             <div key={person.name} className="w-[374px] rounded-[24px] border border-[#CED0D3] bg-white p-[24px] shadow-sm">
               <div className="flex items-center gap-[16px]">
-                <div className="h-[80px] w-[80px] rounded-full bg-[url('https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80')] bg-cover bg-center" />
+                <img src={person.avatar} alt={person.name} className="h-[80px] w-[80px] rounded-full object-cover" />
                 <div>
                   <div className="font-[Poppins,ui-sans-serif,system-ui,sans-serif] text-[20px] font-semibold text-[#000000]">{person.name}</div>
                   <div className="mt-[4px] text-[18px] text-[#003BE2]">{person.role}</div>

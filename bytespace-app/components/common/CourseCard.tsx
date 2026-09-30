@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Course } from "@/data/courses";
+import { AvatarStack } from "@/components/common/CourseDetailSectionComponents";
 
 function StarIcon({ className = "" }: { className?: string }) {
   return (
@@ -17,39 +18,12 @@ function LevelGlyph() {
   );
 }
 
-function Avatars({ muted = false, whiteText = false }: { muted?: boolean; whiteText?: boolean }) {
-  const colors = [
-    "bg-[#CED0D3]",
-    "bg-[#A3B1C7]",
-    "bg-[#D1E7D9]",
-    "bg-[#E7D6C1]",
-  ];
-
-  return (
-    <div className="flex items-center">
-      {[0, 1, 2, 3].map((i) => (
-        <div
-          key={i}
-          className={[
-            "flex h-[32px] w-[32px] items-center justify-center overflow-hidden rounded-full border border-white text-[10px] font-medium",
-            colors[i % colors.length],
-            i > 0 ? "-ml-[8px]" : "",
-          ].join(" ")}
-        >
-          <span className={whiteText ? "text-white" : "text-[#242528]"}>{i === 3 ? "26+" : ""}</span>
-        </div>
-      ))}
-      <div
-        className={[
-          "ml-[-8px] flex h-[32px] w-[32px] items-center justify-center rounded-full border border-white text-[12px] font-medium",
-          muted ? "bg-[#D4FB20] text-[#242528]" : "bg-[#242528] text-white",
-        ].join(" ")}
-      >
-        {whiteText ? "26+" : "26+"}
-      </div>
-    </div>
-  );
-}
+const learnerPortraits = [
+  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=96&h=96&q=80",
+  "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=96&h=96&q=80",
+  "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=96&h=96&q=80",
+  "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=96&h=96&q=80",
+];
 
 export function CourseCard({
   course,
@@ -60,24 +34,22 @@ export function CourseCard({
 }) {
   const isSearch = variant === "search";
   const isAuth = variant === "auth";
+  const showImageMetadata = isAuth;
   const ratingColor = isSearch ? "text-[#CED0D3]" : isAuth ? "text-[#D4FB20]" : "text-[#CED0D3]";
-  const badgeBg = isSearch ? "bg-[#D4FB20] text-[#242528]" : isAuth ? "bg-[#242528] text-white" : "bg-[#242528] text-white";
 
   return (
     <Link href={`/courses/${course.slug}`} className="block w-[373px] rounded-[24px] border border-[#CED0D3] bg-white p-[16px] shadow-sm">
       <div className="relative overflow-hidden rounded-[12px]">
         <img src={course.image} alt={course.title} className="h-[195.14px] w-[341px] object-cover" />
-        <div className="absolute inset-x-[12px] top-[12px] flex gap-[12px]">
-          <span className="rounded-[24px] border border-white/60 bg-[rgba(246,246,246,0.6)] px-[12px] py-[6px] text-[12px] font-medium text-[#4F4F4F] backdrop-blur-sm">
-            {course.lessons}
-          </span>
-          <span className="rounded-[24px] border border-white/60 bg-[rgba(246,246,246,0.6)] px-[12px] py-[6px] text-[12px] font-medium text-[#4F4F4F] backdrop-blur-sm">
-            {course.duration}
-          </span>
-          <span className="rounded-[24px] border border-white/60 bg-[rgba(246,246,246,0.6)] px-[12px] py-[6px] text-[12px] font-medium text-[#4F4F4F] backdrop-blur-sm">
-            {course.comments}
-          </span>
-        </div>
+        {showImageMetadata && (
+          <div className="absolute inset-x-[12px] bottom-[12px] flex gap-[8px]">
+            {[course.lessons, course.duration, course.comments].map((label) => (
+              <span key={label} className="rounded-[24px] border border-white/60 bg-[rgba(246,246,246,0.6)] px-[8px] py-[6px] text-[10px] font-medium text-[#4F4F4F] backdrop-blur-sm">
+                {label}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="relative pt-[16px]">
@@ -101,15 +73,7 @@ export function CourseCard({
               <LevelGlyph />
               {course.level}
             </div>
-            <div className="flex items-center">
-              <div className="flex h-[32px] w-[32px] items-center justify-center rounded-full bg-[#D0C9C9] text-[10px] font-bold text-[#242528] ring-2 ring-white">A</div>
-              <div className="-ml-[8px] flex h-[32px] w-[32px] items-center justify-center rounded-full bg-[#9BB2D9] text-[10px] font-bold text-[#242528] ring-2 ring-white">B</div>
-              <div className="-ml-[8px] flex h-[32px] w-[32px] items-center justify-center rounded-full bg-[#E4E4C8] text-[10px] font-bold text-[#242528] ring-2 ring-white">C</div>
-              <div className="-ml-[8px] flex h-[32px] w-[32px] items-center justify-center rounded-full bg-[#F1C5C5] text-[10px] font-bold text-[#242528] ring-2 ring-white">D</div>
-              <div className={['-ml-[8px] flex h-[32px] w-[32px] items-center justify-center rounded-full text-[12px] font-medium ring-2 ring-white', badgeBg].join(' ')}>
-                26+
-              </div>
-            </div>
+              <AvatarStack items={learnerPortraits} badgeVariant={isSearch ? "lime" : "dark"} />
           </div>
 
           <div className="text-right">

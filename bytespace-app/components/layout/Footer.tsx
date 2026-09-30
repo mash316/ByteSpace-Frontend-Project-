@@ -7,11 +7,7 @@ export function Footer() {
         <div className="flex items-start justify-between gap-[80px] pb-[48px]">
           <div className="w-[528px]">
             <div className="mb-[18px] flex items-center gap-[12px] text-[#242528]">
-              <div className="relative h-[24px] w-[22px]">
-                <div className="absolute left-0 top-0 h-[24px] w-[10px] rounded-[6px] bg-[#D4FB20]" />
-                <div className="absolute right-0 top-[8px] h-[16px] w-[10px] rounded-[5px] bg-[#D4FB20]" />
-                <div className="absolute bottom-0 left-[5px] h-[12px] w-[11px] rounded-[4px] bg-[#D4FB20] opacity-90" />
-              </div>
+              <img src="/logo.png" alt="" aria-hidden="true" className="h-[24px] w-[22px] object-contain" />
               <span className="font-[Poppins,ui-sans-serif,system-ui,sans-serif] text-[24px] font-bold leading-[30px] tracking-[-0.02em]">
                 ByteSpace
               </span>
