@@ -10,7 +10,7 @@ import { SocialAuthSection, type SocialProvider } from "@/components/auth/Social
 import { StatusBanner } from "@/components/auth/StatusBanner";
 import { TextField } from "@/components/auth/TextField";
 import { PrimaryButton } from "@/components/common/PrimaryButton";
-import { delay, getDemoUser, saveDemoUser, verifyCredentials } from "@/lib/demoAuth";
+import { delay, registerDemoUser, saveDemoSession, verifyCredentials } from "@/lib/demoAuth";
 import { validateConfirmPassword, validateEmail, validateName, validatePassword, validateSignIn, validateSignUp } from "@/lib/validators";
 import type { AuthErrors, AuthField, SignUpValues, StatusMessage } from "@/types/auth";
 
@@ -83,12 +83,21 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
     event.preventDefault();
     if (busy) return;
 
+    const submitted = new FormData(event.currentTarget);
+    const submittedValues: SignUpValues = {
+      name: String(submitted.get("name") ?? "").trim(),
+      email: String(submitted.get("email") ?? "").trim().toLowerCase(),
+      password: String(submitted.get("password") ?? ""),
+      confirmPassword: String(submitted.get("confirmPassword") ?? ""),
+    };
+    setValues(submittedValues);
+
     const fieldOrder: AuthField[] = isSignup
       ? ["name", "email", "password", "confirmPassword"]
       : ["email", "password"];
     const nextErrors = isSignup
-      ? validateSignUp(values)
-      : validateSignIn({ email: values.email, password: values.password });
+      ? validateSignUp(submittedValues)
+      : validateSignIn({ email: submittedValues.email, password: submittedValues.password });
     setErrors(nextErrors);
     setTouched(Object.fromEntries(fieldOrder.map((field) => [field, true])) as TouchedFields);
 
@@ -100,53 +109,50 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
 
     const controller = startOperation();
     setSubmitting(true);
-    setStatus({
-      type: "loading",
-      message: isSignup ? "Creating your account…" : "Checking your credentials…",
-    });
+    setStatus({ type: "loading", message: isSignup ? "Creating your account…" : "Checking your credentials…" });
 
     try {
-      await delay(1200, controller.signal);
-      if (controller.signal.aborted) return;
-
       if (isSignup) {
-        try {
-          saveDemoUser({ name: values.name.trim(), email: values.email.trim(), password: values.password });
-        } catch {
+        const registration = registerDemoUser({
+          name: submittedValues.name,
+          email: submittedValues.email,
+          password: submittedValues.password,
+        });
+        if (!registration.ok) {
           setSubmitting(false);
-          setStatus({ type: "error", message: "Couldn't save your account in this browser." });
+          setStatus({ type: "error", message: "Email already registered. Sign in or use another email." });
           return;
         }
 
         setSubmitting(false);
         setStatus({ type: "success", message: "Account created successfully! Redirecting to sign in…" });
-        await delay(1500, controller.signal);
+        await delay(700, controller.signal);
         if (!controller.signal.aborted) router.push("/signin");
         return;
       }
 
-      const result = verifyCredentials(values.email, values.password);
+      const result = verifyCredentials(submittedValues.email, submittedValues.password);
       if (!result.ok) {
-        const hasDemoAccount = getDemoUser() !== null;
         setSubmitting(false);
         setValues((current) => ({ ...current, password: "" }));
-        setStatus({
-          type: "error",
-          message: `Invalid email or password.${hasDemoAccount ? "" : " No demo account found — please sign up first."}`,
-        });
+        setStatus({ type: "error", message: "Invalid email or password." });
         window.requestAnimationFrame(() => inputRefs.current.password?.focus());
         return;
       }
 
+      saveDemoSession(result.user);
       const firstName = result.user.name.trim().split(/\s+/)[0] || result.user.name;
       setSubmitting(false);
       setStatus({ type: "success", message: `Login successful! Welcome back, ${firstName}.` });
-      await delay(1500, controller.signal);
+      await delay(700, controller.signal);
       if (!controller.signal.aborted) router.push("/");
-    } catch {
+    } catch (error) {
       if (!controller.signal.aborted) {
         setSubmitting(false);
-        setStatus({ type: "error", message: "Something went wrong. Please try again." });
+        setStatus({
+          type: "error",
+          message: error instanceof Error ? error.message : "Authentication failed. Please try again.",
+        });
       }
     }
   }
@@ -157,10 +163,17 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
     const name = provider === "google" ? "Google" : "Facebook";
     setLoadingProvider(provider);
     setStatus({ type: "loading", message: `Connecting to ${name}…` });
-    await delay(1200, controller.signal);
-    if (controller.signal.aborted) return;
-    setLoadingProvider(null);
-    setStatus({ type: "info", message: `${name} authentication is not configured in this demo.` });
+    try {
+      await delay(1200, controller.signal);
+      if (controller.signal.aborted) return;
+      setLoadingProvider(null);
+      setStatus({ type: "info", message: `${name} authentication is not configured in this demo.` });
+    } catch {
+      if (!controller.signal.aborted) {
+        setLoadingProvider(null);
+        setStatus({ type: "error", message: `Couldn't connect to ${name}. Please try again.` });
+      }
+    }
   }
 
   const disabled = busy;
@@ -168,7 +181,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
   return (
     <AuthLayout mode={mode}>
       <AuthCard>
-        <form noValidate onSubmit={submitForm} className="flex flex-1 flex-col">
+        <form noValidate onSubmit={submitForm} className="relative z-[1] flex flex-1 flex-col">
           <div className="text-[18px] font-normal text-[#003BE2]">{isSignup ? "Create an Account" : "Sign In"}</div>
           <h1 className="mt-[8px] font-[Poppins,ui-sans-serif,system-ui,sans-serif] text-[clamp(28px,3.1vw,44px)] font-semibold leading-[120%] tracking-[-0.01em] text-[#242528]">
             {isSignup ? <>Welcome to<br />ByteSpace</> : "Welcome Back"}
@@ -182,6 +195,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
                 label="Full Name"
                 placeholder="Jamie Davis"
                 autoComplete="name"
+                enterKeyHint="next"
                 value={values.name}
                 error={errors.name}
                 disabled={disabled}
@@ -197,6 +211,9 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
               type="email"
               placeholder="designer@example.com"
               autoComplete="email"
+              autoCapitalize="none"
+              inputMode="email"
+              enterKeyHint={isSignup ? "next" : "go"}
               value={values.email}
               error={errors.email}
               disabled={disabled}
@@ -210,6 +227,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
               label="Password"
               placeholder="********"
               autoComplete={isSignup ? "new-password" : "current-password"}
+              enterKeyHint={isSignup ? "next" : "go"}
               value={values.password}
               error={errors.password}
               disabled={disabled}
@@ -224,6 +242,7 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
                 label="Confirm Password"
                 placeholder="********"
                 autoComplete="new-password"
+                enterKeyHint="done"
                 value={values.confirmPassword}
                 error={errors.confirmPassword}
                 disabled={disabled}
@@ -260,12 +279,12 @@ export function AuthPage({ mode }: { mode: AuthMode }) {
             {isSignup ? (
               <>
                 <span>Already have an account?</span>
-                <Link href="/signin" className="text-[#003BE2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003BE2]">Login</Link>
+                <Link href="/signin" className="inline-flex min-h-11 items-center text-[#003BE2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003BE2] md:min-h-0">Login</Link>
               </>
             ) : (
               <>
                 <span>New user?</span>
-                <Link href="/signup" className="text-[#003BE2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003BE2]">Create an account</Link>
+                <Link href="/signup" className="inline-flex min-h-11 items-center text-[#003BE2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#003BE2] md:min-h-0">Create an account</Link>
               </>
             )}
           </div>

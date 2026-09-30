@@ -69,14 +69,14 @@ export default function CreatorPage() {
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] text-[#242528]">
-      <BlueGridBackground className="relative h-[592px]">
+      <BlueGridBackground className="relative min-h-[560px] py-8 lg:h-[592px] lg:py-0">
         <Header />
         <CreatorHero profile={profile} />
       </BlueGridBackground>
 
-      <section className="mx-auto w-[1200px] pb-[80px] pt-[40px]">
-        <div className="mb-[40px] flex items-center justify-between gap-[16px]">
-          <div className="flex items-center gap-[16px]">
+      <section className="mx-auto w-full max-w-[1200px] px-4 pb-[80px] pt-[40px] xl:w-[1200px] xl:px-0">
+        <div className="mb-[40px] flex flex-wrap items-center justify-between gap-[16px]">
+          <div className="flex flex-wrap items-center gap-[8px] sm:gap-[16px]">
             <FilterButton
               label="Filter"
               icon={<FilterIcon />}
@@ -113,7 +113,7 @@ export default function CreatorPage() {
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-[40px]">
+        <div className="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-[40px]">
           {filteredCourses.map((course) => (
             <CourseCard key={course.slug} course={course} variant="default" />
           ))}

@@ -38,9 +38,9 @@ export function CourseCard({
   const ratingColor = isSearch ? "text-[#CED0D3]" : isAuth ? "text-[#D4FB20]" : "text-[#CED0D3]";
 
   return (
-    <Link href={`/courses/${course.slug}`} className="block w-[373px] rounded-[24px] border border-[#CED0D3] bg-white p-[16px] shadow-sm">
+    <Link href={`/courses/${course.slug}`} className="block w-full min-w-0 rounded-[24px] border border-[#CED0D3] bg-white p-[16px] shadow-sm xl:w-[373px]">
       <div className="relative overflow-hidden rounded-[12px]">
-        <img src={course.image} alt={course.title} className="h-[195.14px] w-[341px] object-cover" />
+        <img src={course.image} alt={course.title} className="aspect-[341/195] h-auto w-full object-cover xl:h-[195.14px] xl:w-[341px]" />
         {showImageMetadata && (
           <div className="absolute inset-x-[12px] bottom-[12px] flex gap-[8px]">
             {[course.lessons, course.duration, course.comments].map((label) => (
@@ -55,7 +55,7 @@ export function CourseCard({
       <div className="relative pt-[16px]">
         <div className="flex items-start justify-between gap-[8px]">
           <div className="min-w-0 flex-1">
-            <h3 className="overflow-hidden text-ellipsis whitespace-nowrap text-[20px] font-semibold leading-[120%] tracking-[-0.01em] text-black">
+            <h3 className="break-words text-[20px] font-semibold leading-[120%] tracking-[-0.01em] text-black xl:overflow-hidden xl:text-ellipsis xl:whitespace-nowrap">
               {course.cardTitle}
             </h3>
             <p className="mt-[4px] text-[12px] font-medium text-[#003BE2]">by {course.creator}</p>
@@ -67,7 +67,7 @@ export function CourseCard({
           </div>
         </div>
 
-        <div className="mt-[16px] flex items-center justify-between">
+        <div className="mt-[16px] flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-[12px]">
             <div className="inline-flex items-center gap-[6px] rounded-[24px] bg-[#F5F5F6] px-[12px] py-[6px] text-[12px] font-medium text-[#4B4C53]">
               <LevelGlyph />
@@ -76,7 +76,7 @@ export function CourseCard({
               <AvatarStack items={learnerPortraits} badgeVariant={isSearch ? "lime" : "dark"} />
           </div>
 
-          <div className="text-right">
+          <div className="shrink-0 text-right">
             <div className="text-[20px] font-semibold text-[#003BE2]">{course.price}</div>
             <div className="text-[12px] text-[#4F4F53]">/lifetime</div>
           </div>

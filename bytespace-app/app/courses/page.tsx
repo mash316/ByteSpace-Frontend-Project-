@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/layout/Header";
@@ -43,10 +43,45 @@ export default function CoursesPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("Most relevant");
   const [search, setSearch] = useState("");
+  const [searchType, setSearchType] = useState<"courses" | "creators">("courses");
+  const [typeMenuOpen, setTypeMenuOpen] = useState(false);
+  const searchRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    setSearch(new URLSearchParams(window.location.search).get("q") ?? "");
+    const syncFromUrl = () => {
+      const params = new URLSearchParams(window.location.search);
+      setSearch(params.get("q") ?? "");
+      setSearchType(params.get("type") === "creators" ? "creators" : "courses");
+    };
+    syncFromUrl();
+    window.addEventListener("popstate", syncFromUrl);
+    return () => window.removeEventListener("popstate", syncFromUrl);
   }, []);
+
+  useEffect(() => {
+    if (!typeMenuOpen) return;
+    const closeOutside = (event: PointerEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) setTypeMenuOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setTypeMenuOpen(false); };
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOutside);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [typeMenuOpen]);
+
+  function submitSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const query = search.trim();
+    setSearch(query);
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (searchType === "creators") params.set("type", searchType);
+    const queryString = params.toString();
+    router.replace(queryString ? `/courses?${queryString}` : "/courses", { scroll: false });
+  }
 
   const filteredCourses = useMemo(() => {
     const keyword = search.trim().toLowerCase();
@@ -55,11 +90,11 @@ export default function CoursesPage() {
 
     return [...courses]
       .filter((course) => {
-        const matchesSearch =
-          !keyword ||
-          course.title.toLowerCase().includes(keyword) ||
-          course.creator.toLowerCase().includes(keyword) ||
-          course.category?.toLowerCase().includes(keyword);
+        const matchesSearch = !keyword || (searchType === "creators"
+          ? course.creator.toLowerCase().includes(keyword)
+          : course.title.toLowerCase().includes(keyword) ||
+            course.creator.toLowerCase().includes(keyword) ||
+            course.category?.toLowerCase().includes(keyword));
 
         const matchesLevel = !normalizedLevel || course.level === normalizedLevel;
         const matchesCategory = !normalizedCategory || course.category === normalizedCategory;
@@ -79,7 +114,7 @@ export default function CoursesPage() {
         }
         return b.rating - a.rating;
       });
-  }, [search, selectedCategory, selectedLevel, selectedTab, sortBy]);
+  }, [search, searchType, selectedCategory, selectedLevel, selectedTab, sortBy]);
 
   const levels = ["All levels", "Beginner", "Intermediate"];
   const categories = ["All", ...supportedCategories];
@@ -87,35 +122,44 @@ export default function CoursesPage() {
 
   return (
     <main className="min-h-screen bg-[#FAFAFA] text-[#242528]">
-      <BlueGridBackground className="relative h-[360px]">
+      <BlueGridBackground className="relative h-[360px]" overflowVisible>
         <Header />
         <div className="relative z-10 flex h-full flex-col items-center justify-center pt-[80px]">
-          <h1 className="font-[Poppins,ui-sans-serif,system-ui,sans-serif] text-[36px] font-semibold leading-[43px] tracking-[-0.01em] text-[#F5F5F6]">
+          <h1 className="break-words px-4 text-center font-[Poppins,ui-sans-serif,system-ui,sans-serif] text-[clamp(28px,7vw,36px)] font-semibold leading-[1.2] tracking-[-0.01em] text-[#F5F5F6] lg:px-0 lg:text-[36px] lg:leading-[43px]">
             Find Your Next Course
           </h1>
-          <div className="mt-[32px] flex w-[624px] items-center gap-[16px] rounded-[24px] bg-white p-[8px] shadow-md">
+          <form ref={searchRef} onSubmit={submitSearch} role="search" className="relative z-20 mx-4 mt-[32px] flex w-[calc(100%-2rem)] max-w-[624px] min-w-0 items-center gap-[8px] overflow-visible rounded-[24px] bg-white p-[8px] shadow-md sm:gap-[16px]">
             <div className="flex flex-1 items-center gap-[12px] rounded-[24px] bg-white px-[20px] py-[14px]">
               <SearchIcon />
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                className="w-full border-0 bg-transparent text-[18px] text-[#82868E] outline-none placeholder:text-[#82868E]"
+                type="search"
+                name="q"
+                enterKeyHint="search"
+                autoComplete="off"
+                className="min-w-0 w-full border-0 bg-transparent text-[16px] text-[#82868E] outline-none placeholder:text-[#82868E] sm:text-[18px]"
                 placeholder="Search"
               />
             </div>
-            <button className="flex h-[48px] items-center justify-center gap-[8px] rounded-[24px] bg-[#D4FB20] px-[20px] text-[18px] font-medium text-[#242528]">
-              Courses
+            <button type="button" aria-haspopup="listbox" aria-expanded={typeMenuOpen} onClick={() => setTypeMenuOpen((open) => !open)} className="flex h-[48px] shrink-0 items-center justify-center gap-[8px] rounded-[24px] bg-[#D4FB20] px-[12px] text-[16px] font-medium text-[#242528] sm:px-[20px] sm:text-[18px]">
+              {searchType === "courses" ? "Courses" : "Creators"}
               <svg viewBox="0 0 24 24" className="h-[20px] w-[20px]" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="m6 9 6 6 6-6" />
               </svg>
             </button>
-          </div>
+            {typeMenuOpen && <div role="listbox" aria-label="Search type" className="absolute right-0 top-full z-[60] mt-2 min-w-36 rounded-xl border border-[#CED0D3] bg-white p-1 text-left shadow-xl">
+              {(["courses", "creators"] as const).map((type) => <button key={type} type="button" role="option" aria-selected={searchType === type} onClick={() => { setSearchType(type); setTypeMenuOpen(false); }} className="min-h-11 w-full rounded-lg px-4 py-2 text-left text-[16px] text-[#242528] hover:bg-[#F5F5F6]">
+                {type === "courses" ? "Courses" : "Creators"}
+              </button>)}
+            </div>}
+          </form>
         </div>
       </BlueGridBackground>
 
-      <div className="mx-auto w-[1200px] pt-[28px]">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-[16px]">
+      <div className="mx-auto w-full max-w-[1200px] px-4 pt-[28px] xl:w-[1200px] xl:px-0">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-[8px] sm:gap-[16px]">
             <FilterButton label="Filter" active={selectedCategory !== "All" || selectedLevel !== "All levels"} onClick={() => {
               setSelectedCategory("All");
               setSelectedLevel("All levels");
@@ -187,7 +231,7 @@ export default function CoursesPage() {
           ))}
         </div>
 
-        <div className="mt-[48px] grid grid-cols-3 gap-[40px] pb-[60px]">
+        <div className="mt-[32px] grid grid-cols-1 justify-items-center gap-5 pb-[60px] sm:grid-cols-2 lg:mt-[48px] lg:grid-cols-3 lg:gap-[40px]">
           {Array.from({ length: 3 }, (_, repeat) =>
             filteredCourses.map((course) => (
               <CourseCard key={`${repeat}-${course.slug}`} course={course} variant="search" />
@@ -223,3 +267,5 @@ export default function CoursesPage() {
     </main>
   );
 }
+
+//done
