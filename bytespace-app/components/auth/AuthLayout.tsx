@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { BlueGridBackground } from "@/components/common/BlueGridBackground";
 import { AuthShowcase } from "@/components/auth/AuthShowcase";
+import { Header } from "@/components/layout/Header";
 
 export function AuthLayout({
   mode,
@@ -19,10 +20,11 @@ export function AuthLayout({
         style={{ backgroundColor: "#003BE2" }}
         overflowVisible
       >
-        <div className="mx-auto grid min-h-dvh w-full max-w-[1200px] grid-cols-1 items-start gap-y-8 px-4 pb-8 pt-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,579px)] lg:gap-x-[clamp(32px,5.55vw,80px)] lg:px-4 xl:px-0">
+        <div className="md:hidden"><Header /></div>
+        <div className="mx-auto grid min-h-dvh w-full max-w-[1200px] grid-cols-1 items-start gap-y-8 px-4 pb-8 pt-[84px] sm:px-6 md:pt-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,579px)] lg:gap-x-[clamp(32px,5.55vw,80px)] lg:px-4 xl:px-0">
           <div className="min-w-0">
             <header className="flex h-[40px] items-center gap-[16px]">
-              <Link href="/" aria-label="ByteSpace home" className="block h-[33px] w-[31px] shrink-0">
+              <Link href="/" aria-label="ByteSpace home" className="hidden h-[33px] w-[31px] shrink-0 md:block">
                 <img src="/logo2.png" alt="" className="h-full w-full object-contain" />
               </Link>
               <Link

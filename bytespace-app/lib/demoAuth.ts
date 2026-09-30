@@ -1,8 +1,11 @@
-// DEMO ONLY - plain text in localStorage, not secure, not real authentication.
+// Demo-only authentication stored in this browser. Replace with a backend for
+// accounts that must be shared across devices or protected server-side.
 
 import type { DemoUser } from "@/types/auth";
 
-const DEMO_USER_KEY = "bytespace_demo_user";
+const DEMO_USERS_KEY = "bytespace_demo_users";
+const LEGACY_DEMO_USER_KEY = "bytespace_demo_user";
+const DEMO_SESSION_KEY = "bytespace_demo_session";
 
 function isDemoUser(value: unknown): value is DemoUser {
   if (typeof value !== "object" || value === null) return false;
@@ -10,30 +13,64 @@ function isDemoUser(value: unknown): value is DemoUser {
   return typeof record.name === "string" && typeof record.email === "string" && typeof record.password === "string";
 }
 
-export function saveDemoUser(user: DemoUser): void {
-  if (typeof window === "undefined") throw new Error("Demo accounts are only available in the browser.");
-  window.localStorage.setItem(DEMO_USER_KEY, JSON.stringify(user));
+function readDemoUsers(): DemoUser[] {
+  if (typeof window === "undefined") throw new Error("Authentication is only available in the browser.");
+
+  try {
+    const serializedUsers = window.localStorage.getItem(DEMO_USERS_KEY);
+    if (serializedUsers) {
+      const parsed: unknown = JSON.parse(serializedUsers);
+      if (Array.isArray(parsed)) return parsed.filter(isDemoUser);
+      throw new Error("Saved accounts are invalid.");
+    }
+
+    const legacySerializedUser = window.localStorage.getItem(LEGACY_DEMO_USER_KEY);
+    if (!legacySerializedUser) return [];
+    const legacyUser: unknown = JSON.parse(legacySerializedUser);
+    return isDemoUser(legacyUser) ? [legacyUser] : [];
+  } catch {
+    throw new Error("Browser storage is unavailable. Enable site storage and try again.");
+  }
 }
 
-export function getDemoUser(): DemoUser | null {
-  if (typeof window === "undefined") return null;
+export function registerDemoUser(user: DemoUser): { ok: true } | { ok: false; reason: "duplicate" } {
+  const email = user.email.trim().toLowerCase();
+  const users = readDemoUsers();
+  if (users.some((savedUser) => savedUser.email.trim().toLowerCase() === email)) {
+    return { ok: false, reason: "duplicate" };
+  }
+
   try {
-    const serialized = window.localStorage.getItem(DEMO_USER_KEY);
-    if (!serialized) return null;
-    const parsed: unknown = JSON.parse(serialized);
-    return isDemoUser(parsed) ? parsed : null;
+    window.localStorage.setItem(DEMO_USERS_KEY, JSON.stringify([
+      ...users,
+      { ...user, name: user.name.trim(), email },
+    ]));
+    return { ok: true };
   } catch {
-    return null;
+    throw new Error("Could not save your account on this device. Check browser storage and try again.");
   }
 }
 
 export function verifyCredentials(email: string, password: string): { ok: true; user: DemoUser } | { ok: false } {
-  const user = getDemoUser();
-  if (!user) return { ok: false };
-  if (user.email.trim().toLowerCase() !== email.trim().toLowerCase() || user.password !== password) {
-    return { ok: false };
+  const normalizedEmail = email.trim().toLowerCase();
+  const user = readDemoUsers().find((savedUser) => (
+    savedUser.email.trim().toLowerCase() === normalizedEmail && savedUser.password === password
+  ));
+  return user ? { ok: true, user } : { ok: false };
+}
+
+export function saveDemoSession(user: DemoUser): void {
+  if (typeof window === "undefined") throw new Error("Authentication is only available in the browser.");
+
+  try {
+    window.localStorage.setItem(DEMO_SESSION_KEY, JSON.stringify({
+      name: user.name,
+      email: user.email.trim().toLowerCase(),
+      signedIn: true,
+    }));
+  } catch {
+    throw new Error("Could not save your sign-in on this device. Check browser storage and try again.");
   }
-  return { ok: true, user };
 }
 
 export function delay(milliseconds: number, signal?: AbortSignal): Promise<void> {

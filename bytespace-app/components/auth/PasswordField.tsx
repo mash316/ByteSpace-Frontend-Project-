@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ChangeEvent, type FocusEvent, type Ref } from "react";
+import { useState, type ChangeEvent, type FocusEvent, type InputHTMLAttributes, type Ref } from "react";
 import { TextField } from "@/components/auth/TextField";
 
 export function PasswordField({
@@ -13,6 +13,7 @@ export function PasswordField({
   onBlur,
   error,
   autoComplete,
+  enterKeyHint,
   disabled = false,
   inputRef,
 }: {
@@ -25,6 +26,7 @@ export function PasswordField({
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
   error?: string;
   autoComplete?: string;
+  enterKeyHint?: InputHTMLAttributes<HTMLInputElement>["enterKeyHint"];
   disabled?: boolean;
   inputRef?: Ref<HTMLInputElement>;
 }) {
@@ -42,6 +44,7 @@ export function PasswordField({
       onBlur={onBlur}
       error={error}
       autoComplete={autoComplete}
+      enterKeyHint={enterKeyHint}
       disabled={disabled}
       inputRef={inputRef}
       rightAdornment={(

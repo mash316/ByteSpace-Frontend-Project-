@@ -1,4 +1,4 @@
-import type { ChangeEvent, FocusEvent, ReactNode, Ref } from "react";
+import type { ChangeEvent, FocusEvent, InputHTMLAttributes, ReactNode, Ref } from "react";
 
 export function TextField({
   id,
@@ -11,6 +11,9 @@ export function TextField({
   onBlur,
   error,
   autoComplete,
+  autoCapitalize,
+  inputMode,
+  enterKeyHint,
   disabled = false,
   rightAdornment,
   inputRef,
@@ -25,6 +28,9 @@ export function TextField({
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
   error?: string;
   autoComplete?: string;
+  autoCapitalize?: string;
+  inputMode?: InputHTMLAttributes<HTMLInputElement>["inputMode"];
+  enterKeyHint?: InputHTMLAttributes<HTMLInputElement>["enterKeyHint"];
   disabled?: boolean;
   rightAdornment?: ReactNode;
   inputRef?: Ref<HTMLInputElement>;
@@ -42,6 +48,9 @@ export function TextField({
           type={type}
           required
           autoComplete={autoComplete}
+          autoCapitalize={autoCapitalize}
+          inputMode={inputMode}
+          enterKeyHint={enterKeyHint}
           value={value}
           onChange={onChange}
           onBlur={onBlur}
