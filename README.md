@@ -385,3 +385,8 @@ BRAC University
 ---
 
 Built with **Next.js + React + TypeScript + Tailwind CSS**.
+
+
+
+## Project Description
+ByteSpace Frontend landing page built with Next.js and Tailwind CSS.
